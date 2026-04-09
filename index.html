@@ -1,0 +1,232 @@
+import React, { useMemo, useState } from "react"; import { motion } from "framer-motion"; import { ArrowRight, BadgeCheck, ChevronRight, Copy, Crown, Coins, Gift, MessageCircle, Shield, Sparkles, Star, Zap, } from "lucide-react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Badge } from "@/components/ui/badge"; import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const SERVER_NAME = "Deadly MC"; const SERVER_IP = "Play.deadlymc.fun:34001"; const DISCORD = "https://discord.gg/Xr7qAY6c4";
+
+const ranks = [ { name: "Smol Rank", price: 69, monthly: true, icon: "✨", perks: ["Colored chat", "Starter cosmetics", "Priority support"] }, { name: "Booster Rank", price: 69, monthly: true, icon: "⚡", perks: ["Bonus cosmetics", "Extra vault space", "Special badge"] }, { name: "Alien Rank", price: 69, monthly: true, icon: "👽", perks: ["Unique prefix", "Custom join message", "VIP lounge access"] }, { name: "Legend Rank", price: 199, monthly: true, icon: "🏆", perks: ["Strong cosmetics", "Elite tag", "Support priority"] }, { name: "Deadly Rank", price: 249, monthly: true, icon: "☠️", perks: ["Premium cosmetics", "Better rewards", "Flashy prefix"] }, { name: "Crown Rank", price: 599, monthly: true, icon: "👑", perks: ["Top-tier status", "Best cosmetics", "King-like presence"] }, ];
+
+const coins = [ { name: "200 Coins", price: 39, icon: "🪙" }, { name: "1000 Coins", price: 199, icon: "🪙" }, { name: "2500 Coins", price: 299, icon: "🪙" }, { name: "3500 Coins", price: 399, icon: "🪙" }, { name: "4500 Coins", price: 499, icon: "🪙" }, ];
+
+const keys = [ { name: "4 Vote Keys", price: 39, icon: "🎁" }, { name: "4 Party Keys", price: 59, icon: "🎉" }, { name: "4 Hoody Keys", price: 79, icon: "🧥" }, { name: "4 Mango Keys", price: 109, icon: "🥭" }, { name: "4 Monthly Keys", price: 139, icon: "📦" }, ];
+
+const about = [ "Amazing gameplay with exciting Minecraft modes and adventures.", "Active community to chat, make friends, and have fun together.", "PvP and lifesteal challenges to test your skills and power up.", "Events and giveaways with cool rewards for the community.", "Friendly and safe server managed by an active staff team.", ];
+
+function cx(...classes) { return classes.filter(Boolean).join(" "); }
+
+function PriceCard({ item, type, onBuy }) { return ( <Card className="group border-white/10 bg-white/5 shadow-2xl shadow-sky-950/20 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/10"> <CardContent className="p-5"> <div className="flex items-start justify-between gap-3"> <div> <div className="mb-2 text-2xl">{item.icon}</div> <h3 className="text-lg font-semibold text-white">{item.name}</h3> <p className="mt-1 text-sm text-sky-100/80"> {type === "rank" ? "Monthly rank for your journey" : type === "coin" ? "Top up your balance instantly" : "Open exciting crate rewards"} </p> </div> <Badge className="rounded-full border border-sky-300/20 bg-sky-400/15 text-sky-100"> ₹{item.price} </Badge> </div>
+
+{type === "rank" && (
+      <div className="mt-4 space-y-2">
+        {item.perks.map((perk) => (
+          <div key={perk} className="flex items-center gap-2 text-sm text-sky-50/85">
+            <BadgeCheck className="h-4 w-4 text-sky-300" />
+            {perk}
+          </div>
+        ))}
+      </div>
+    )}
+
+    {type !== "rank" && (
+      <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/30 p-4 text-sm text-sky-50/80">
+        Fast delivery through Discord support after payment confirmation.
+      </div>
+    )}
+
+    <Button
+      onClick={() => onBuy(item)}
+      className="mt-5 w-full rounded-2xl bg-sky-400 text-slate-950 hover:bg-sky-300"
+    >
+      Buy now <ArrowRight className="ml-2 h-4 w-4" />
+    </Button>
+  </CardContent>
+</Card>
+
+); }
+
+export default function DeadlyMCWebsite() { const [category, setCategory] = useState("all"); const [cart, setCart] = useState([]); const [copied, setCopied] = useState(false);
+
+const items = useMemo(() => { const grouped = [ ...ranks.map((item) => ({ ...item, type: "rank" })), ...coins.map((item) => ({ ...item, type: "coin" })), ...keys.map((item) => ({ ...item, type: "key" })), ]; return category === "all" ? grouped : grouped.filter((item) => item.type === category); }, [category]);
+
+const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+const copyIp = async () => { try { await navigator.clipboard.writeText(SERVER_IP); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { setCopied(false); } };
+
+const addToCart = (item) => { setCart((prev) => [...prev, item]); };
+
+const removeLast = () => setCart((prev) => prev.slice(0, -1));
+
+return ( <div className="min-h-screen overflow-hidden bg-[#06111f] text-white"> <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.28),_transparent_35%),radial-gradient(circle_at_80%_20%,_rgba(125,211,252,0.16),_transparent_22%),linear-gradient(180deg,_#07111f_0%,_#06111f_60%,_#03101d_100%)]" /> <div className="mx-auto max-w-7xl px-4 py-6 md:px-8"> <header className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-white/5 p-4 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:flex-row md:items-center md:justify-between md:p-5"> <div className="flex items-center gap-3"> <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-400/20 text-xl text-sky-300 ring-1 ring-sky-300/30"> <Sparkles className="h-6 w-6" /> </div> <div> <div className="text-xl font-bold tracking-wide">{SERVER_NAME}</div> <div className="text-sm text-sky-100/70">Lifesteal Public Server • Clean Premium Store</div> </div> </div> <div className="flex flex-wrap items-center gap-3"> <Button variant="outline" className="rounded-2xl border-sky-300/25 bg-white/5 text-sky-50 hover:bg-white/10" onClick={copyIp}> <Copy className="mr-2 h-4 w-4" /> {copied ? "Copied!" : SERVER_IP} </Button> <Button asChild className="rounded-2xl bg-sky-400 text-slate-950 hover:bg-sky-300"> <a href={DISCORD} target="_blank" rel="noreferrer"> <MessageCircle className="mr-2 h-4 w-4" /> Discord Support </a> </Button> </div> </header>
+
+<section className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:p-10"
+      >
+        <Badge className="mb-4 rounded-full border border-sky-300/20 bg-sky-400/15 px-4 py-1 text-sky-100 hover:bg-sky-400/20">
+          Sky Blue Premium Theme
+        </Badge>
+        <h1 className="max-w-3xl text-4xl font-black leading-tight md:text-6xl">
+          Enter the world of <span className="text-sky-300">Deadly MC</span>.
+        </h1>
+        <p className="mt-5 max-w-2xl text-base leading-7 text-sky-50/80 md:text-lg">
+          A competitive lifesteal Minecraft SMP built for PvP players, active grinders, and a friendly community.
+          Explore ranks, coin bundles, and key packages with a clean shop experience and Discord-based support.
+        </p>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Button className="rounded-2xl bg-sky-400 px-6 text-slate-950 hover:bg-sky-300" asChild>
+            <a href={DISCORD} target="_blank" rel="noreferrer">
+              Join Discord <ChevronRight className="ml-1 h-4 w-4" />
+            </a>
+          </Button>
+          <Button variant="outline" className="rounded-2xl border-sky-300/25 bg-white/5 text-sky-50 hover:bg-white/10" onClick={() => document.getElementById("store")?.scrollIntoView({ behavior: "smooth" })}>
+            View Store
+          </Button>
+        </div>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          {[
+            { label: "Server IP", value: SERVER_IP },
+            { label: "Playstyle", value: "Lifesteal • PvP" },
+            { label: "Support", value: "Discord ticket help" },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-2xl border border-white/10 bg-slate-950/25 p-4">
+              <div className="text-xs uppercase tracking-[0.25em] text-sky-200/60">{stat.label}</div>
+              <div className="mt-2 text-sm font-semibold text-white">{stat.value}</div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65 }}
+        className="rounded-[32px] border border-sky-300/15 bg-gradient-to-b from-sky-300/15 to-white/5 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:p-8"
+      >
+        <div className="flex items-center gap-2 text-sky-200">
+          <Shield className="h-5 w-5" />
+          <span className="font-semibold">About Us</span>
+        </div>
+        <h2 className="mt-3 text-2xl font-bold">Why players choose Deadly MC</h2>
+        <div className="mt-5 space-y-3">
+          {about.map((line) => (
+            <div key={line} className="flex gap-3 rounded-2xl border border-white/10 bg-slate-950/25 p-3 text-sm text-sky-50/85">
+              <div className="mt-0.5 text-sky-300">
+                <Star className="h-4 w-4" />
+              </div>
+              <div>{line}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 rounded-2xl border border-sky-300/20 bg-sky-400/10 p-4 text-sm text-sky-50/85">
+          Tip: add a launcher banner, gameplay screenshots, and a live server status widget for extra trust and polish.
+        </div>
+      </motion.div>
+    </section>
+
+    <section id="store" className="mt-10 rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:p-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <Badge className="rounded-full border border-sky-300/20 bg-sky-400/15 text-sky-100">Store</Badge>
+          <h2 className="mt-3 text-3xl font-bold">Ranks, coins, and key packages</h2>
+          <p className="mt-2 max-w-2xl text-sky-50/75">
+            Keep the checkout simple, fast, and mobile-friendly. Each product card can lead to a secure payment page or a Discord support ticket.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-slate-950/25 p-4 text-sm text-sky-50/80">
+          <div className="flex items-center gap-2 font-semibold text-white"><Gift className="h-4 w-4 text-sky-300" /> Cart summary</div>
+          <div className="mt-2">Items: {cart.length}</div>
+          <div>Total: ₹{total}</div>
+          <div className="mt-3 flex gap-2">
+            <Button size="sm" className="rounded-xl bg-sky-400 text-slate-950 hover:bg-sky-300" onClick={() => setCart([])}>
+              Clear
+            </Button>
+            <Button size="sm" variant="outline" className="rounded-xl border-sky-300/25 bg-white/5 text-sky-50 hover:bg-white/10" onClick={removeLast}>
+              Remove last
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-2">
+        <Tabs value={category} onValueChange={setCategory} className="w-full">
+          <TabsList className="grid h-auto w-full grid-cols-4 rounded-2xl bg-slate-950/35 p-1 md:w-[520px] md:grid-cols-4">
+            <TabsTrigger className="rounded-xl data-[state=active]:bg-sky-400 data-[state=active]:text-slate-950" value="all">All</TabsTrigger>
+            <TabsTrigger className="rounded-xl data-[state=active]:bg-sky-400 data-[state=active]:text-slate-950" value="rank">Ranks</TabsTrigger>
+            <TabsTrigger className="rounded-xl data-[state=active]:bg-sky-400 data-[state=active]:text-slate-950" value="coin">Coins</TabsTrigger>
+            <TabsTrigger className="rounded-xl data-[state=active]:bg-sky-400 data-[state=active]:text-slate-950" value="key">Keys</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {items.map((item) => (
+          <PriceCard key={`${item.type}-${item.name}`} item={item} type={item.type} onBuy={addToCart} />
+        ))}
+      </div>
+    </section>
+
+    <section className="mt-10 grid gap-6 lg:grid-cols-2">
+      <Card className="border-white/10 bg-white/5 shadow-2xl shadow-sky-950/20 backdrop-blur-xl">
+        <CardContent className="p-6 md:p-8">
+          <div className="flex items-center gap-2 text-sky-200"><Crown className="h-5 w-5" /> <span className="font-semibold">Ranks section</span></div>
+          <h3 className="mt-3 text-2xl font-bold">Premium rank presentation</h3>
+          <p className="mt-2 text-sky-50/75">
+            Showcase rank cards with monthly pricing, perks, and a strong call-to-action. Highlight Crown Rank as the flagship premium option.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {["Smol", "Booster", "Alien", "Legend", "Deadly", "Crown"].map((r) => (
+              <div key={r} className="rounded-2xl border border-white/10 bg-slate-950/25 p-3 text-sm text-sky-50/85">
+                <div className="font-semibold text-white">{r} Rank</div>
+                <div className="text-sky-200/75">Add cosmetic perks, tags, and priority support.</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-white/10 bg-white/5 shadow-2xl shadow-sky-950/20 backdrop-blur-xl">
+        <CardContent className="p-6 md:p-8">
+          <div className="flex items-center gap-2 text-sky-200"><MessageCircle className="h-5 w-5" /> <span className="font-semibold">Support and purchase flow</span></div>
+          <h3 className="mt-3 text-2xl font-bold">Discord-based support integration</h3>
+          <p className="mt-2 text-sky-50/75">
+            Add the Discord invite in the header, hero CTA, and footer support block. Use Discord for pre-sales questions, payment help, and delivery confirmation.
+          </p>
+          <div className="mt-5 space-y-3 text-sm text-sky-50/85">
+            <div className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-sky-300" /> Server link help</div>
+            <div className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-sky-300" /> Payment verification</div>
+            <div className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-sky-300" /> Rank delivery support</div>
+          </div>
+          <Button asChild className="mt-6 rounded-2xl bg-sky-400 text-slate-950 hover:bg-sky-300">
+            <a href={DISCORD} target="_blank" rel="noreferrer">
+              Open Discord Support <ArrowRight className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
+        </CardContent>
+      </Card>
+    </section>
+
+    <footer className="mt-10 rounded-[28px] border border-white/10 bg-white/5 p-6 text-sm text-sky-50/75 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:p-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <div className="text-lg font-bold text-white">{SERVER_NAME}</div>
+          <div className="mt-1">Play at {SERVER_IP} • Support: Discord invite</div>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" className="rounded-2xl border-sky-300/25 bg-white/5 text-sky-50 hover:bg-white/10" onClick={copyIp}>
+            <Copy className="mr-2 h-4 w-4" /> Copy IP
+          </Button>
+          <Button asChild className="rounded-2xl bg-sky-400 text-slate-950 hover:bg-sky-300">
+            <a href={DISCORD} target="_blank" rel="noreferrer">
+              Discord Support <ArrowRight className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+); }
