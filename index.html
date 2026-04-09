@@ -1,232 +1,598 @@
-import React, { useMemo, useState } from "react"; import { motion } from "framer-motion"; import { ArrowRight, BadgeCheck, ChevronRight, Copy, Crown, Coins, Gift, MessageCircle, Shield, Sparkles, Star, Zap, } from "lucide-react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Badge } from "@/components/ui/badge"; import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deadly MC | Lifesteal SMP Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-2: #081827;
+      --card: rgba(255,255,255,.06);
+      --card-2: rgba(255,255,255,.08);
+      --border: rgba(125, 211, 252, .18);
+      --text: #eaf6ff;
+      --muted: rgba(234, 246, 255, .72);
+      --sky: #7dd3fc;
+      --sky-2: #38bdf8;
+      --sky-3: #0ea5e9;
+      --dark: #03101d;
+      --shadow: 0 30px 80px rgba(3, 10, 20, .55);
+      --radius: 28px;
+    }* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top, rgba(56,189,248,.26), transparent 35%),
+    radial-gradient(circle at 80% 20%, rgba(125,211,252,.16), transparent 20%),
+    linear-gradient(180deg, var(--bg) 0%, #05101d 62%, var(--dark) 100%);
+  min-height: 100vh;
+}
 
-const SERVER_NAME = "Deadly MC"; const SERVER_IP = "Play.deadlymc.fun:34001"; const DISCORD = "https://discord.gg/Xr7qAY6c4";
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
 
-const ranks = [ { name: "Smol Rank", price: 69, monthly: true, icon: "✨", perks: ["Colored chat", "Starter cosmetics", "Priority support"] }, { name: "Booster Rank", price: 69, monthly: true, icon: "⚡", perks: ["Bonus cosmetics", "Extra vault space", "Special badge"] }, { name: "Alien Rank", price: 69, monthly: true, icon: "👽", perks: ["Unique prefix", "Custom join message", "VIP lounge access"] }, { name: "Legend Rank", price: 199, monthly: true, icon: "🏆", perks: ["Strong cosmetics", "Elite tag", "Support priority"] }, { name: "Deadly Rank", price: 249, monthly: true, icon: "☠️", perks: ["Premium cosmetics", "Better rewards", "Flashy prefix"] }, { name: "Crown Rank", price: 599, monthly: true, icon: "👑", perks: ["Top-tier status", "Best cosmetics", "King-like presence"] }, ];
+.wrap {
+  width: min(1200px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 60px;
+}
 
-const coins = [ { name: "200 Coins", price: 39, icon: "🪙" }, { name: "1000 Coins", price: 199, icon: "🪙" }, { name: "2500 Coins", price: 299, icon: "🪙" }, { name: "3500 Coins", price: 399, icon: "🪙" }, { name: "4500 Coins", price: 499, icon: "🪙" }, ];
+.glass {
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
 
-const keys = [ { name: "4 Vote Keys", price: 39, icon: "🎁" }, { name: "4 Party Keys", price: 59, icon: "🎉" }, { name: "4 Hoody Keys", price: 79, icon: "🧥" }, { name: "4 Mango Keys", price: 109, icon: "🥭" }, { name: "4 Monthly Keys", price: 139, icon: "📦" }, ];
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 26px;
+  flex-wrap: wrap;
+}
 
-const about = [ "Amazing gameplay with exciting Minecraft modes and adventures.", "Active community to chat, make friends, and have fun together.", "PvP and lifesteal challenges to test your skills and power up.", "Events and giveaways with cool rewards for the community.", "Friendly and safe server managed by an active staff team.", ];
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 
-function cx(...classes) { return classes.filter(Boolean).join(" "); }
+.brand-badge {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(56,189,248,.15);
+  border: 1px solid rgba(125,211,252,.24);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+  font-size: 26px;
+}
 
-function PriceCard({ item, type, onBuy }) { return ( <Card className="group border-white/10 bg-white/5 shadow-2xl shadow-sky-950/20 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/10"> <CardContent className="p-5"> <div className="flex items-start justify-between gap-3"> <div> <div className="mb-2 text-2xl">{item.icon}</div> <h3 className="text-lg font-semibold text-white">{item.name}</h3> <p className="mt-1 text-sm text-sky-100/80"> {type === "rank" ? "Monthly rank for your journey" : type === "coin" ? "Top up your balance instantly" : "Open exciting crate rewards"} </p> </div> <Badge className="rounded-full border border-sky-300/20 bg-sky-400/15 text-sky-100"> ₹{item.price} </Badge> </div>
+.brand h1, .hero h1, .section-title {
+  margin: 0;
+  letter-spacing: -.03em;
+}
 
-{type === "rank" && (
-      <div className="mt-4 space-y-2">
-        {item.perks.map((perk) => (
-          <div key={perk} className="flex items-center gap-2 text-sm text-sky-50/85">
-            <BadgeCheck className="h-4 w-4 text-sky-300" />
-            {perk}
-          </div>
-        ))}
-      </div>
-    )}
+.brand h1 { font-size: 1.05rem; font-weight: 900; }
+.brand p { margin: 4px 0 0; font-size: .9rem; color: var(--muted); }
 
-    {type !== "rank" && (
-      <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/30 p-4 text-sm text-sky-50/80">
-        Fast delivery through Discord support after payment confirmation.
-      </div>
-    )}
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
-    <Button
-      onClick={() => onBuy(item)}
-      className="mt-5 w-full rounded-2xl bg-sky-400 text-slate-950 hover:bg-sky-300"
-    >
-      Buy now <ArrowRight className="ml-2 h-4 w-4" />
-    </Button>
-  </CardContent>
-</Card>
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: .25s ease;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
 
-); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--sky), #a5f3fc);
+  color: #04111f;
+  box-shadow: 0 12px 30px rgba(56,189,248,.22);
+}
+.btn-primary:hover { transform: translateY(-1px); filter: brightness(1.03); }
 
-export default function DeadlyMCWebsite() { const [category, setCategory] = useState("all"); const [cart, setCart] = useState([]); const [copied, setCopied] = useState(false);
+.btn-ghost {
+  color: var(--text);
+  background: rgba(255,255,255,.04);
+  border-color: rgba(125,211,252,.16);
+}
+.btn-ghost:hover { background: rgba(255,255,255,.08); transform: translateY(-1px); }
 
-const items = useMemo(() => { const grouped = [ ...ranks.map((item) => ({ ...item, type: "rank" })), ...coins.map((item) => ({ ...item, type: "coin" })), ...keys.map((item) => ({ ...item, type: "key" })), ]; return category === "all" ? grouped : grouped.filter((item) => item.type === category); }, [category]);
+.hero {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1.25fr .75fr;
+  gap: 22px;
+}
 
-const total = cart.reduce((sum, item) => sum + item.price, 0);
+.hero-main, .hero-side, .store, .footer-card {
+  border-radius: var(--radius);
+  padding: 28px;
+}
 
-const copyIp = async () => { try { await navigator.clipboard.writeText(SERVER_IP); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { setCopied(false); } };
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(56,189,248,.12);
+  border: 1px solid rgba(125,211,252,.18);
+  color: #dff5ff;
+  font-size: .9rem;
+  font-weight: 700;
+}
 
-const addToCart = (item) => { setCart((prev) => [...prev, item]); };
+.hero h1 {
+  margin-top: 16px;
+  font-size: clamp(2.4rem, 5vw, 4.9rem);
+  line-height: .95;
+  font-weight: 900;
+}
 
-const removeLast = () => setCart((prev) => prev.slice(0, -1));
+.hero h1 span { color: var(--sky); }
+.hero p {
+  margin: 18px 0 0;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 62ch;
+  font-size: 1rem;
+}
 
-return ( <div className="min-h-screen overflow-hidden bg-[#06111f] text-white"> <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.28),_transparent_35%),radial-gradient(circle_at_80%_20%,_rgba(125,211,252,0.16),_transparent_22%),linear-gradient(180deg,_#07111f_0%,_#06111f_60%,_#03101d_100%)]" /> <div className="mx-auto max-w-7xl px-4 py-6 md:px-8"> <header className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-white/5 p-4 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:flex-row md:items-center md:justify-between md:p-5"> <div className="flex items-center gap-3"> <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-400/20 text-xl text-sky-300 ring-1 ring-sky-300/30"> <Sparkles className="h-6 w-6" /> </div> <div> <div className="text-xl font-bold tracking-wide">{SERVER_NAME}</div> <div className="text-sm text-sky-100/70">Lifesteal Public Server • Clean Premium Store</div> </div> </div> <div className="flex flex-wrap items-center gap-3"> <Button variant="outline" className="rounded-2xl border-sky-300/25 bg-white/5 text-sky-50 hover:bg-white/10" onClick={copyIp}> <Copy className="mr-2 h-4 w-4" /> {copied ? "Copied!" : SERVER_IP} </Button> <Button asChild className="rounded-2xl bg-sky-400 text-slate-950 hover:bg-sky-300"> <a href={DISCORD} target="_blank" rel="noreferrer"> <MessageCircle className="mr-2 h-4 w-4" /> Discord Support </a> </Button> </div> </header>
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
 
-<section className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:p-10"
-      >
-        <Badge className="mb-4 rounded-full border border-sky-300/20 bg-sky-400/15 px-4 py-1 text-sky-100 hover:bg-sky-400/20">
-          Sky Blue Premium Theme
-        </Badge>
-        <h1 className="max-w-3xl text-4xl font-black leading-tight md:text-6xl">
-          Enter the world of <span className="text-sky-300">Deadly MC</span>.
-        </h1>
-        <p className="mt-5 max-w-2xl text-base leading-7 text-sky-50/80 md:text-lg">
-          A competitive lifesteal Minecraft SMP built for PvP players, active grinders, and a friendly community.
-          Explore ranks, coin bundles, and key packages with a clean shop experience and Discord-based support.
-        </p>
+.mini {
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(3,16,29,.35);
+  border: 1px solid rgba(255,255,255,.08);
+}
+.mini .label {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .24em;
+  color: rgba(191, 229, 255, .62);
+}
+.mini .value {
+  margin-top: 8px;
+  font-size: .98rem;
+  font-weight: 700;
+  word-break: break-word;
+}
 
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button className="rounded-2xl bg-sky-400 px-6 text-slate-950 hover:bg-sky-300" asChild>
-            <a href={DISCORD} target="_blank" rel="noreferrer">
-              Join Discord <ChevronRight className="ml-1 h-4 w-4" />
-            </a>
-          </Button>
-          <Button variant="outline" className="rounded-2xl border-sky-300/25 bg-white/5 text-sky-50 hover:bg-white/10" onClick={() => document.getElementById("store")?.scrollIntoView({ behavior: "smooth" })}>
-            View Store
-          </Button>
-        </div>
+.hero-side h2, .store-head h2, .about h2, .support h2 { margin: 0; font-size: 1.5rem; }
+.hero-side p, .store-head p, .about p, .support p, .footer-card p { color: var(--muted); line-height: 1.8; }
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {[
-            { label: "Server IP", value: SERVER_IP },
-            { label: "Playstyle", value: "Lifesteal • PvP" },
-            { label: "Support", value: "Discord ticket help" },
-          ].map((stat) => (
-            <div key={stat.label} className="rounded-2xl border border-white/10 bg-slate-950/25 p-4">
-              <div className="text-xs uppercase tracking-[0.25em] text-sky-200/60">{stat.label}</div>
-              <div className="mt-2 text-sm font-semibold text-white">{stat.value}</div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+.feature-list { display: grid; gap: 12px; margin-top: 18px; }
+.feature {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(3,16,29,.32);
+  border: 1px solid rgba(255,255,255,.08);
+}
+.feature .icon { color: var(--sky); font-size: 18px; margin-top: 2px; }
+.feature strong { display: block; margin-bottom: 4px; }
+.feature span { color: var(--muted); font-size: .94rem; line-height: 1.6; }
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.65 }}
-        className="rounded-[32px] border border-sky-300/15 bg-gradient-to-b from-sky-300/15 to-white/5 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:p-8"
-      >
-        <div className="flex items-center gap-2 text-sky-200">
-          <Shield className="h-5 w-5" />
-          <span className="font-semibold">About Us</span>
-        </div>
-        <h2 className="mt-3 text-2xl font-bold">Why players choose Deadly MC</h2>
-        <div className="mt-5 space-y-3">
-          {about.map((line) => (
-            <div key={line} className="flex gap-3 rounded-2xl border border-white/10 bg-slate-950/25 p-3 text-sm text-sky-50/85">
-              <div className="mt-0.5 text-sky-300">
-                <Star className="h-4 w-4" />
-              </div>
-              <div>{line}</div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-6 rounded-2xl border border-sky-300/20 bg-sky-400/10 p-4 text-sm text-sky-50/85">
-          Tip: add a launcher banner, gameplay screenshots, and a live server status widget for extra trust and polish.
-        </div>
-      </motion.div>
-    </section>
+.store { margin-top: 24px; }
+.store-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 
-    <section id="store" className="mt-10 rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:p-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+.summary {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(3,16,29,.28);
+  border: 1px solid rgba(255,255,255,.08);
+  min-width: 245px;
+}
+.summary b { display: block; margin-bottom: 8px; }
+.summary small { color: var(--muted); display: block; margin: 5px 0; }
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.tab {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(125,211,252,.16);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  cursor: pointer;
+  transition: .2s ease;
+  font-weight: 700;
+}
+.tab.active, .tab:hover { background: var(--sky); color: #04111f; }
+
+.grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+  border: 1px solid rgba(125,211,252,.16);
+  transition: .25s ease;
+}
+.card:hover { transform: translateY(-4px); border-color: rgba(125,211,252,.3); }
+
+.card-top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.emoji { font-size: 28px; }
+.price {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(56,189,248,.14);
+  border: 1px solid rgba(125,211,252,.16);
+  color: #dff5ff;
+  font-size: .9rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.card h3 { margin: 14px 0 8px; font-size: 1.15rem; }
+.card p { margin: 0; color: var(--muted); line-height: 1.7; font-size: .95rem; }
+.perks { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.perks li { color: #dff5ff; font-size: .92rem; display: flex; gap: 8px; align-items: center; }
+.dot { color: var(--sky); }
+.card .btn { width: 100%; margin-top: 16px; }
+
+.split {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.about, .support, .footer-card {
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.bullet-list { display: grid; gap: 12px; margin-top: 18px; }
+.bullet {
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(3,16,29,.32);
+  border: 1px solid rgba(255,255,255,.08);
+}
+.bullet .bicon { color: var(--sky); margin-top: 2px; }
+
+.footer-card { margin-top: 24px; }
+.footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  background: rgba(3,16,29,.88);
+  color: var(--text);
+  border: 1px solid rgba(125,211,252,.22);
+  padding: 12px 14px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: .25s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+.muted { color: var(--muted); }
+.accent { color: var(--sky); }
+
+@media (max-width: 980px) {
+  .hero, .split, .grid { grid-template-columns: 1fr; }
+  .hero-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .wrap { width: min(100% - 18px, 1200px); padding-top: 14px; }
+  .topbar, .hero-main, .hero-side, .store, .about, .support, .footer-card { padding: 18px; }
+  .hero h1 { font-size: 2.6rem; }
+  .store-head { align-items: start; }
+  .summary { width: 100%; min-width: 0; }
+  .grid { gap: 14px; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar glass">
+      <div class="brand">
+        <div class="brand-badge">✦</div>
         <div>
-          <Badge className="rounded-full border border-sky-300/20 bg-sky-400/15 text-sky-100">Store</Badge>
-          <h2 className="mt-3 text-3xl font-bold">Ranks, coins, and key packages</h2>
-          <p className="mt-2 max-w-2xl text-sky-50/75">
-            Keep the checkout simple, fast, and mobile-friendly. Each product card can lead to a secure payment page or a Discord support ticket.
-          </p>
+          <h1>Deadly MC</h1>
+          <p>Lifesteal SMP • Clean premium store</p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-slate-950/25 p-4 text-sm text-sky-50/80">
-          <div className="flex items-center gap-2 font-semibold text-white"><Gift className="h-4 w-4 text-sky-300" /> Cart summary</div>
-          <div className="mt-2">Items: {cart.length}</div>
-          <div>Total: ₹{total}</div>
-          <div className="mt-3 flex gap-2">
-            <Button size="sm" className="rounded-xl bg-sky-400 text-slate-950 hover:bg-sky-300" onClick={() => setCart([])}>
-              Clear
-            </Button>
-            <Button size="sm" variant="outline" className="rounded-xl border-sky-300/25 bg-white/5 text-sky-50 hover:bg-white/10" onClick={removeLast}>
-              Remove last
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 flex flex-wrap gap-2">
-        <Tabs value={category} onValueChange={setCategory} className="w-full">
-          <TabsList className="grid h-auto w-full grid-cols-4 rounded-2xl bg-slate-950/35 p-1 md:w-[520px] md:grid-cols-4">
-            <TabsTrigger className="rounded-xl data-[state=active]:bg-sky-400 data-[state=active]:text-slate-950" value="all">All</TabsTrigger>
-            <TabsTrigger className="rounded-xl data-[state=active]:bg-sky-400 data-[state=active]:text-slate-950" value="rank">Ranks</TabsTrigger>
-            <TabsTrigger className="rounded-xl data-[state=active]:bg-sky-400 data-[state=active]:text-slate-950" value="coin">Coins</TabsTrigger>
-            <TabsTrigger className="rounded-xl data-[state=active]:bg-sky-400 data-[state=active]:text-slate-950" value="key">Keys</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
-      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((item) => (
-          <PriceCard key={`${item.type}-${item.name}`} item={item} type={item.type} onBuy={addToCart} />
-        ))}
-      </div>
-    </section>
-
-    <section className="mt-10 grid gap-6 lg:grid-cols-2">
-      <Card className="border-white/10 bg-white/5 shadow-2xl shadow-sky-950/20 backdrop-blur-xl">
-        <CardContent className="p-6 md:p-8">
-          <div className="flex items-center gap-2 text-sky-200"><Crown className="h-5 w-5" /> <span className="font-semibold">Ranks section</span></div>
-          <h3 className="mt-3 text-2xl font-bold">Premium rank presentation</h3>
-          <p className="mt-2 text-sky-50/75">
-            Showcase rank cards with monthly pricing, perks, and a strong call-to-action. Highlight Crown Rank as the flagship premium option.
-          </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {["Smol", "Booster", "Alien", "Legend", "Deadly", "Crown"].map((r) => (
-              <div key={r} className="rounded-2xl border border-white/10 bg-slate-950/25 p-3 text-sm text-sky-50/85">
-                <div className="font-semibold text-white">{r} Rank</div>
-                <div className="text-sky-200/75">Add cosmetic perks, tags, and priority support.</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-white/10 bg-white/5 shadow-2xl shadow-sky-950/20 backdrop-blur-xl">
-        <CardContent className="p-6 md:p-8">
-          <div className="flex items-center gap-2 text-sky-200"><MessageCircle className="h-5 w-5" /> <span className="font-semibold">Support and purchase flow</span></div>
-          <h3 className="mt-3 text-2xl font-bold">Discord-based support integration</h3>
-          <p className="mt-2 text-sky-50/75">
-            Add the Discord invite in the header, hero CTA, and footer support block. Use Discord for pre-sales questions, payment help, and delivery confirmation.
-          </p>
-          <div className="mt-5 space-y-3 text-sm text-sky-50/85">
-            <div className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-sky-300" /> Server link help</div>
-            <div className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-sky-300" /> Payment verification</div>
-            <div className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-sky-300" /> Rank delivery support</div>
-          </div>
-          <Button asChild className="mt-6 rounded-2xl bg-sky-400 text-slate-950 hover:bg-sky-300">
-            <a href={DISCORD} target="_blank" rel="noreferrer">
-              Open Discord Support <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
-          </Button>
-        </CardContent>
-      </Card>
-    </section>
-
-    <footer className="mt-10 rounded-[28px] border border-white/10 bg-white/5 p-6 text-sm text-sky-50/75 shadow-2xl shadow-sky-950/20 backdrop-blur-xl md:p-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <div className="text-lg font-bold text-white">{SERVER_NAME}</div>
-          <div className="mt-1">Play at {SERVER_IP} • Support: Discord invite</div>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="outline" className="rounded-2xl border-sky-300/25 bg-white/5 text-sky-50 hover:bg-white/10" onClick={copyIp}>
-            <Copy className="mr-2 h-4 w-4" /> Copy IP
-          </Button>
-          <Button asChild className="rounded-2xl bg-sky-400 text-slate-950 hover:bg-sky-300">
-            <a href={DISCORD} target="_blank" rel="noreferrer">
-              Discord Support <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
-          </Button>
-        </div>
-      </div>
-    </footer>
+      </div><div class="actions">
+    <button class="btn btn-ghost" id="copyIpBtn">Copy IP</button>
+    <a class="btn btn-primary" href="https://discord.gg/Xr7qAY6c4" target="_blank" rel="noreferrer">Discord Support</a>
   </div>
-</div>
+</header>
 
-); }
+<section class="hero">
+  <div class="hero-main glass">
+    <span class="pill">Sky Blue Theme • Premium UI • Mobile Friendly</span>
+    <h1>Play on <span>Deadly MC</span> and dominate the lifesteal world.</h1>
+    <p>
+      A competitive Minecraft SMP built for PvP players, grinders, and a friendly community.
+      This website is designed to promote your server, showcase your store, and make purchases feel fast, clean, and trusted.
+    </p>
+
+    <div class="actions" style="margin-top:22px;">
+      <a class="btn btn-primary" href="#store">View Store</a>
+      <a class="btn btn-ghost" href="https://discord.gg/Xr7qAY6c4" target="_blank" rel="noreferrer">Join Discord</a>
+    </div>
+
+    <div class="hero-grid">
+      <div class="mini">
+        <div class="label">Server IP</div>
+        <div class="value" id="serverIpText">Play.deadlymc.fun:34001</div>
+      </div>
+      <div class="mini">
+        <div class="label">Mode</div>
+        <div class="value">Lifesteal PvP SMP</div>
+      </div>
+      <div class="mini">
+        <div class="label">Support</div>
+        <div class="value">Discord purchase help</div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="hero-side glass">
+    <h2>About Us</h2>
+    <p>Deadly MC is made for players who want exciting gameplay, strong competition, and a community that stays active.</p>
+
+    <div class="feature-list">
+      <div class="feature"><div class="icon">★</div><div><strong>Exciting Gameplay</strong><span>Enjoy lifesteal, PvP, and progression-focused adventures.</span></div></div>
+      <div class="feature"><div class="icon">✦</div><div><strong>Active Community</strong><span>Meet players, chat, and build a strong server community.</span></div></div>
+      <div class="feature"><div class="icon">⚔</div><div><strong>Events & Giveaways</strong><span>Keep players engaged with rewards and special events.</span></div></div>
+      <div class="feature"><div class="icon">🛡</div><div><strong>Friendly Staff</strong><span>Safe, clean, and active support from the staff team.</span></div></div>
+    </div>
+  </aside>
+</section>
+
+<section class="store glass" id="store">
+  <div class="store-head">
+    <div>
+      <span class="pill">Store</span>
+      <h2 class="section-title" style="margin-top:14px;">Ranks, Coins, and Keys</h2>
+      <p>Use this store layout to sell ranks, currency bundles, and crates with a premium checkout feel.</p>
+    </div>
+
+    <div class="summary">
+      <b>Cart</b>
+      <small id="cartCount">Items: 0</small>
+      <small id="cartTotal">Total: ₹0</small>
+      <div class="actions" style="margin-top:12px;">
+        <button class="btn btn-primary" id="clearCartBtn">Clear Cart</button>
+        <button class="btn btn-ghost" id="removeLastBtn">Remove Last</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs" aria-label="Store categories">
+    <button class="tab active" data-filter="all">All</button>
+    <button class="tab" data-filter="rank">Ranks</button>
+    <button class="tab" data-filter="coin">Coins</button>
+    <button class="tab" data-filter="key">Keys</button>
+  </div>
+
+  <div class="grid" id="productGrid"></div>
+</section>
+
+<section class="split">
+  <div class="about glass">
+    <span class="pill">Ranks</span>
+    <h2 style="margin-top:14px;">Premium rank presentation</h2>
+    <p>Highlight each rank card with monthly pricing, perks, and a strong buy button. Make Crown Rank the top-tier premium option.</p>
+    <div class="bullet-list">
+      <div class="bullet"><div class="bicon">✔</div><div><strong>Good hierarchy</strong><div class="muted">Show lower ranks first, then place premium ranks near the top.</div></div></div>
+      <div class="bullet"><div class="bicon">✔</div><div><strong>Trust signals</strong><div class="muted">Add delivery notes, support badges, and clear pricing.</div></div></div>
+      <div class="bullet"><div class="bicon">✔</div><div><strong>Visual appeal</strong><div class="muted">Use gradients, glass cards, and hover motion for a modern look.</div></div></div>
+    </div>
+  </div>
+
+  <div class="support glass">
+    <span class="pill">Support</span>
+    <h2 style="margin-top:14px;">Discord link integration</h2>
+    <p>
+      Add the Discord invite in the hero, top bar, store footer, and purchase buttons.
+      Use it for payment help, delivery confirmation, and server updates.
+    </p>
+    <div class="bullet-list">
+      <div class="bullet"><div class="bicon">✉</div><div><strong>Support tickets</strong><div class="muted">Answer purchase questions quickly.</div></div></div>
+      <div class="bullet"><div class="bicon">⏱</div><div><strong>Fast delivery</strong><div class="muted">Confirm ranks and keys after payment.</div></div></div>
+      <div class="bullet"><div class="bicon">☁</div><div><strong>Server updates</strong><div class="muted">Use Discord for announcements and events.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="footer-card glass">
+  <div class="footer-row">
+    <div>
+      <h2 style="margin:0; font-size:1.4rem;">Deadly MC</h2>
+      <p style="margin:8px 0 0;">Play.deadlymc.fun:34001 • Discord: Xr7qAY6c4</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="copyIpBtn2">Copy Server IP</button>
+      <a class="btn btn-primary" href="https://discord.gg/Xr7qAY6c4" target="_blank" rel="noreferrer">Open Discord</a>
+    </div>
+  </div>
+</section>
+
+  </div>  <div class="toast" id="toast">Copied to clipboard</div>  <script>
+    const SERVER_IP = 'Play.deadlymc.fun:34001';
+    const DISCORD_URL = 'https://discord.gg/Xr7qAY6c4';
+
+    const products = [
+      { type: 'rank', name: 'Smol Rank', price: 69, emoji: '✨', desc: 'Starter rank with clean style and basic perks.', perks: ['Colored chat', 'Starter cosmetics', 'Priority support'] },
+      { type: 'rank', name: 'Booster Rank', price: 69, emoji: '⚡', desc: 'A value rank for players who want a little more shine.', perks: ['Special badge', 'Bonus cosmetics', 'Extra vault space'] },
+      { type: 'rank', name: 'Alien Rank', price: 69, emoji: '👽', desc: 'A fun cosmetic rank with unique presence.', perks: ['Unique prefix', 'Custom join message', 'VIP lounge access'] },
+      { type: 'rank', name: 'Legend Rank', price: 199, emoji: '🏆', desc: 'A stronger mid-tier rank for competitive players.', perks: ['Elite tag', 'Support priority', 'Strong cosmetics'] },
+      { type: 'rank', name: 'Deadly Rank', price: 249, emoji: '☠️', desc: 'Premium rank with a fierce server identity.', perks: ['Flashy prefix', 'Better rewards', 'Premium cosmetics'] },
+      { type: 'rank', name: 'Crown Rank', price: 599, emoji: '👑', desc: 'The top premium rank for the biggest supporters.', perks: ['Top-tier status', 'Best cosmetics', 'King-like presence'] },
+
+      { type: 'coin', name: '200 Coins', price: 39, emoji: '🪙', desc: 'Small top-up for quick purchases.', perks: ['Instant delivery', 'Good for basics', 'Budget friendly'] },
+      { type: 'coin', name: '1000 Coins', price: 199, emoji: '🪙', desc: 'Great for regular shop use and upgrades.', perks: ['Popular bundle', 'Better value', 'Fast support'] },
+      { type: 'coin', name: '2500 Coins', price: 299, emoji: '🪙', desc: 'Strong bundle for active players.', perks: ['More value', 'Useful for progress', 'Fast delivery'] },
+      { type: 'coin', name: '3500 Coins', price: 399, emoji: '🪙', desc: 'Large bundle for serious grinders.', perks: ['High value', 'Best for regulars', 'Quick claim'] },
+      { type: 'coin', name: '4500 Coins', price: 499, emoji: '🪙', desc: 'Maximum coin bundle for heavy spending.', perks: ['Best top-up', 'Big savings', 'Instant confirmation'] },
+
+      { type: 'key', name: '4 Vote Keys', price: 39, emoji: '🎁', desc: 'Useful crate keys for rewards and fun.', perks: ['Loot rewards', 'Cheap bundle', 'Instant unlock'] },
+      { type: 'key', name: '4 Party Keys', price: 59, emoji: '🎉', desc: 'Party crate keys for extra excitement.', perks: ['Event vibes', 'Reward chance', 'Great for gifting'] },
+      { type: 'key', name: '4 Hoody Keys', price: 79, emoji: '🧥', desc: 'A stylish key bundle for cosmetic lovers.', perks: ['Cosmetic rewards', 'Nice value', 'Fast delivery'] },
+      { type: 'key', name: '4 Mango Keys', price: 109, emoji: '🥭', desc: 'Premium crate bundle with better drops.', perks: ['Premium feel', 'Higher rewards', 'Popular option'] },
+      { type: 'key', name: '4 Monthly Keys', price: 139, emoji: '📦', desc: 'Strong crate bundle for the long term.', perks: ['Monthly style', 'Good loot', 'Top-tier bundle'] },
+    ];
+
+    const grid = document.getElementById('productGrid');
+    const tabs = [...document.querySelectorAll('.tab')];
+    const toast = document.getElementById('toast');
+    const cartCount = document.getElementById('cartCount');
+    const cartTotal = document.getElementById('cartTotal');
+    const clearCartBtn = document.getElementById('clearCartBtn');
+    const removeLastBtn = document.getElementById('removeLastBtn');
+    const copyIpBtn = document.getElementById('copyIpBtn');
+    const copyIpBtn2 = document.getElementById('copyIpBtn2');
+    const serverIpText = document.getElementById('serverIpText');
+
+    let activeFilter = 'all';
+    let cart = [];
+
+    serverIpText.textContent = SERVER_IP;
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied: ' + text);
+      } catch {
+        showToast('Copy failed');
+      }
+    }
+
+    function updateCart() {
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      cartCount.textContent = `Items: ${cart.length}`;
+      cartTotal.textContent = `Total: ₹${total}`;
+    }
+
+    function productCard(item) {
+      return `
+        <article class="card">
+          <div class="card-top">
+            <div>
+              <div class="emoji">${item.emoji}</div>
+              <div class="price">₹${item.price}</div>
+            </div>
+            <div class="muted" style="text-transform:uppercase;letter-spacing:.22em;font-size:.72rem;">${item.type}</div>
+          </div>
+          <h3>${item.name}</h3>
+          <p>${item.desc}</p>
+          <ul class="perks">
+            ${item.perks.map(perk => `<li><span class="dot">●</span> ${perk}</li>`).join('')}
+          </ul>
+          <button class="btn btn-primary" data-buy="${item.name}">Buy Now</button>
+        </article>
+      `;
+    }
+
+    function render() {
+      const filtered = activeFilter === 'all' ? products : products.filter(p => p.type === activeFilter);
+      grid.innerHTML = filtered.map(productCard).join('');
+      grid.querySelectorAll('[data-buy]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = products.find(p => p.name === btn.dataset.buy);
+          cart.push(item);
+          updateCart();
+          showToast(`${item.name} added to cart`);
+        });
+      });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        activeFilter = tab.dataset.filter;
+        render();
+      });
+    });
+
+    clearCartBtn.addEventListener('click', () => {
+      cart = [];
+      updateCart();
+      showToast('Cart cleared');
+    });
+
+    removeLastBtn.addEventListener('click', () => {
+      cart.pop();
+      updateCart();
+      showToast('Last item removed');
+    });
+
+    copyIpBtn.addEventListener('click', () => copyText(SERVER_IP));
+    copyIpBtn2.addEventListener('click', () => copyText(SERVER_IP));
+
+    render();
+    updateCart();
+  </script></body>
+</html>
